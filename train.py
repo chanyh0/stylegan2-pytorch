@@ -9,7 +9,7 @@ from torch import nn, autograd, optim
 from torch.nn import functional as F
 from torch.utils import data
 import torch.distributed as dist
-from torchvision import transforms, utils
+from torchvision import transforms, utils, datasets
 from tqdm import tqdm
 
 try:
@@ -418,6 +418,12 @@ if __name__ == "__main__":
         help="probability update interval of the adaptive augmentation",
     )
 
+    parser.add_argument(
+        '--num-sample',
+        default=None,
+        type=int
+    )
+
     args = parser.parse_args()
 
     n_gpu = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
@@ -501,7 +507,14 @@ if __name__ == "__main__":
         ]
     )
 
-    dataset = MultiResolutionDataset(args.path, transform, args.size)
+    #dataset = MultiResolutionDataset(args.path, transform, args.size)
+    dataset = datasets.ImageFolder(
+        args.path, transform=transform
+    )
+
+    if args.num_sample is not None:
+        dataset = data.Subset(data, range(args.num_sample))
+
     loader = data.DataLoader(
         dataset,
         batch_size=args.batch,
