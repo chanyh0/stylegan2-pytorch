@@ -513,7 +513,7 @@ if __name__ == "__main__":
     )
 
     if args.num_sample is not None:
-        dataset = data.Subset(data, range(args.num_sample))
+        dataset = data.Subset(data, list(range(args.num_sample)))
 
     loader = data.DataLoader(
         dataset,
@@ -525,4 +525,5 @@ if __name__ == "__main__":
     if get_rank() == 0 and wandb is not None and args.wandb:
         wandb.init(project="stylegan 2")
 
+    train
     train(args, loader, generator, discriminator, g_optim, d_optim, g_ema, device)
